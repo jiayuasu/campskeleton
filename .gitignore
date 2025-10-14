@@ -10,10 +10,7 @@
 
 # IntelliJ
 *.iml
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
+/.idea/
 
 # Mac
 .DS_Store

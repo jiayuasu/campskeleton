@@ -9,8 +9,5 @@
         <module name="campskeleton" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="campskeleton" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
