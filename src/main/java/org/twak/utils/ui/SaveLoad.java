@@ -1,7 +1,6 @@
 package org.twak.utils.ui;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.security.AnyTypePermission;
 import java.awt.Container;
 import java.io.File;
 import java.io.FileInputStream;
@@ -263,7 +262,11 @@ public class SaveLoad
     private static XStream createXStream()
     {
         XStream xstream = new XStream();
-        xstream.addPermission(AnyTypePermission.ANY);
+        xstream.allowTypesByWildcard(new String[] {
+            "org.twak.camp.**",
+            "org.twak.utils.**",
+            "javax.vecmath.**"
+        });
         return xstream;
     }
 }

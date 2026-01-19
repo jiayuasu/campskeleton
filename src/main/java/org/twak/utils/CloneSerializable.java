@@ -9,7 +9,6 @@ import java.io.PipedOutputStream;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.binary.BinaryStreamDriver;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.thoughtworks.xstream.security.AnyTypePermission;
 
 /**
  *
@@ -39,7 +38,11 @@ public class CloneSerializable
     public static Object xClone (Object orig) {
     	
     	XStream x = new XStream(new BinaryStreamDriver());
-    	x.addPermission(AnyTypePermission.ANY);
+    	x.allowTypesByWildcard(new String[] {
+    		"org.twak.camp.**",
+    		"org.twak.utils.**",
+    		"javax.vecmath.**"
+    	});
 
     	ByteArrayOutputStream bos = new ByteArrayOutputStream();
     	x.toXML( orig, bos );
