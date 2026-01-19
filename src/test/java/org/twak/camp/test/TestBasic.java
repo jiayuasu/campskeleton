@@ -39,9 +39,7 @@ public class TestBasic {
 			for (Corner c : ll) {
 				Assertions.assertNotNull(c, "Corner should not be null");
 				Assertions.assertNotNull(c.getLoc3(), "Corner location should not be null");
-				System.out.println(c);
 			}
-			System.out.println(">>");
 		}
 	}
 }
