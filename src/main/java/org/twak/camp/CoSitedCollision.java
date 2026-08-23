@@ -12,6 +12,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3d;
 import javax.vecmath.Vector3d;
@@ -29,6 +31,8 @@ import org.twak.utils.geom.LinearForm3D;
  */
 public class CoSitedCollision
 {
+    private static final Logger LOG = Logger.getLogger( CoSitedCollision.class.getName() );
+
     public Collection<EdgeCollision> edges = new ArrayList<>(10);
     public Point3d loc;
 
@@ -213,8 +217,9 @@ public class CoSitedCollision
                 }
                 catch ( Throwable t )
                 {
-                    t.printStackTrace();
-//                    System.err.println( "didn't like colliding " + e + "and " + s.prevL );
+                    // degenerate (parallel) edges around the smash edge: keep the chain as it is
+                    if ( LOG.isLoggable( Level.FINE ) )
+                        LOG.log( Level.FINE, "didn't like colliding " + e + " and " + s.prevL, t );
                     continue;
                 }
             }

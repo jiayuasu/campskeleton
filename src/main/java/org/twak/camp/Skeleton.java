@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3d;
@@ -47,6 +49,8 @@ import org.twak.utils.geom.LinearForm3D;
  */
 public class Skeleton
 {
+    private static final Logger LOG = Logger.getLogger( Skeleton.class.getName() );
+
     public boolean preserveParallel = false;
     public boolean volumeMaximising = true;
 	public Set<Corner> liveCorners = new LinkedHashSet<>();
@@ -252,12 +256,9 @@ public class Skeleton
             }
             catch ( Throwable t )
             {
-                t.printStackTrace();
-                if (t.getCause() != null)
-                {
-                    System.out.println(" caused by:");
-                    t.getCause().printStackTrace();
-                }
+                // the event is skipped; the skeleton continues with the remaining queue
+                if ( LOG.isLoggable( Level.FINE ) )
+                    LOG.log( Level.FINE, "failed to process height event " + he, t );
             }
 
         DebugDevice.dump("after main "+String.format("%4d", ++i ), this );
@@ -535,9 +536,8 @@ public class Skeleton
                 }
                 catch ( AssertionError f )
                 {
-                    System.err.println( " on edge is "+e);
-                    System.err.println( " validate error on corner " + c + "  on line " + f.getStackTrace()[0].getLineNumber() );
-                    f.printStackTrace();
+                    if ( LOG.isLoggable( Level.FINE ) )
+                        LOG.log( Level.FINE, "validate error on corner " + c + " on edge " + e, f );
                 }
                 finally
                 {
@@ -603,10 +603,7 @@ public class Skeleton
             while (current !=start && handbrake++ < 1000);
 
             if (handbrake >= 1000)
-            {
-                System.err.println("broken loops in findLiveLoop");
-                Thread.dumpStack();
-            }
+                LOG.log( Level.FINE, "broken loops in findLiveLoop" );
         }
 
         return out; //out.count();
