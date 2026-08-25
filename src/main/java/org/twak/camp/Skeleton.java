@@ -31,6 +31,7 @@ import org.twak.utils.collections.ManyManyMap;
 import org.twak.utils.collections.MultiMap;
 import org.twak.utils.collections.SetCorrespondence;
 import org.twak.utils.geom.LinearForm3D;
+import org.twak.utils.geom.SingularPlanesError;
 
 /**
  * to debug: does it work at all (PointEditor)
@@ -257,8 +258,15 @@ public class Skeleton
             catch ( Throwable t )
             {
                 // the event is skipped; the skeleton continues with the remaining queue
-                if ( LOG.isLoggable( Level.FINE ) )
-                    LOG.log( Level.FINE, "failed to process height event " + he, t );
+                if ( t instanceof SingularPlanesError )
+                {
+                    // expected for degenerate (parallel) edge configurations; can occur hundreds
+                    // of times for a single polygon with short, near-collinear edges
+                    if ( LOG.isLoggable( Level.FINE ) )
+                        LOG.log( Level.FINE, "skipping degenerate height event " + he, t );
+                }
+                else
+                    LOG.log( Level.WARNING, "failed to process height event " + he, t );
             }
 
         DebugDevice.dump("after main "+String.format("%4d", ++i ), this );
@@ -603,7 +611,7 @@ public class Skeleton
             while (current !=start && handbrake++ < 1000);
 
             if (handbrake >= 1000)
-                LOG.log( Level.FINE, "broken loops in findLiveLoop" );
+                LOG.log( Level.WARNING, "broken loops in findLiveLoop" );
         }
 
         return out; //out.count();

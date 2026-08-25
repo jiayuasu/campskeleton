@@ -23,6 +23,7 @@ import org.twak.utils.Triple;
 import org.twak.utils.collections.ConsecutivePairs;
 import org.twak.utils.collections.ConsecutiveTriples;
 import org.twak.utils.geom.Ray3d;
+import org.twak.utils.geom.SingularPlanesError;
 import org.twak.utils.geom.LinearForm3D;
 
 /**
@@ -217,9 +218,14 @@ public class CoSitedCollision
                 }
                 catch ( Throwable t )
                 {
-                    // degenerate (parallel) edges around the smash edge: keep the chain as it is
-                    if ( LOG.isLoggable( Level.FINE ) )
-                        LOG.log( Level.FINE, "didn't like colliding " + e + " and " + s.prevL, t );
+                    if ( t instanceof SingularPlanesError )
+                    {
+                        // degenerate (parallel) edges around the smash edge: keep the chain as is
+                        if ( LOG.isLoggable( Level.FINE ) )
+                            LOG.log( Level.FINE, "didn't like colliding " + e + " and " + s.prevL, t );
+                    }
+                    else
+                        LOG.log( Level.WARNING, "failed to update chain for smash edge " + e, t );
                     continue;
                 }
             }
