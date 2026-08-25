@@ -175,12 +175,17 @@ public class LinearForm3D implements Cloneable
     
     /**
      * Finds the intersection point between this plane and two others in 3D space.
+     *
+     * @throws SingularPlanesError if the three planes do not intersect at a single point (their
+     *     normals are linearly dependent, including parallel or coincident cases, or a plane has
+     *     NaN coefficients). See that class for how callers handle it and why it is an Error
+     *     rather than a RuntimeException.
      */
     public Tuple3d collide(final LinearForm3D b, final LinearForm3D c) {
     	final LinearForm3D a = this;
         
         if (a.hasNaN() || b.hasNaN() || c.hasNaN()) {
-            throw new Error();
+            throw new SingularPlanesError("Plane has NaN coefficients.");
         }
         
         // Calculate determinant directly
@@ -190,7 +195,7 @@ public class LinearForm3D implements Cloneable
                     
         // Check if planes are parallel/coincident (no single intersection point)
         if (det == 0) {
-        	throw new Error("Planes do not intersect at a single point.");
+            throw new SingularPlanesError("Planes do not intersect at a single point.");
         }
         
         // Use Cramer's rule to solve the system

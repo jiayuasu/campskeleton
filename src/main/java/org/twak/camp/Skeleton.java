@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3d;
@@ -29,6 +31,7 @@ import org.twak.utils.collections.ManyManyMap;
 import org.twak.utils.collections.MultiMap;
 import org.twak.utils.collections.SetCorrespondence;
 import org.twak.utils.geom.LinearForm3D;
+import org.twak.utils.geom.SingularPlanesError;
 
 /**
  * to debug: does it work at all (PointEditor)
@@ -47,6 +50,8 @@ import org.twak.utils.geom.LinearForm3D;
  */
 public class Skeleton
 {
+    private static final Logger LOG = Logger.getLogger( Skeleton.class.getName() );
+
     public boolean preserveParallel = false;
     public boolean volumeMaximising = true;
 	public Set<Corner> liveCorners = new LinkedHashSet<>();
@@ -252,12 +257,16 @@ public class Skeleton
             }
             catch ( Throwable t )
             {
-                t.printStackTrace();
-                if (t.getCause() != null)
+                // the event is skipped; the skeleton continues with the remaining queue
+                if ( t instanceof SingularPlanesError )
                 {
-                    System.out.println(" caused by:");
-                    t.getCause().printStackTrace();
+                    // expected for degenerate (parallel) edge configurations; can occur hundreds
+                    // of times for a single polygon with short, near-collinear edges
+                    if ( LOG.isLoggable( Level.FINE ) )
+                        LOG.log( Level.FINE, "skipping degenerate height event " + he, t );
                 }
+                else
+                    LOG.log( Level.WARNING, "failed to process height event " + he, t );
             }
 
         DebugDevice.dump("after main "+String.format("%4d", ++i ), this );
@@ -535,9 +544,8 @@ public class Skeleton
                 }
                 catch ( AssertionError f )
                 {
-                    System.err.println( " on edge is "+e);
-                    System.err.println( " validate error on corner " + c + "  on line " + f.getStackTrace()[0].getLineNumber() );
-                    f.printStackTrace();
+                    if ( LOG.isLoggable( Level.FINE ) )
+                        LOG.log( Level.FINE, "validate error on corner " + c + " on edge " + e, f );
                 }
                 finally
                 {
@@ -603,10 +611,7 @@ public class Skeleton
             while (current !=start && handbrake++ < 1000);
 
             if (handbrake >= 1000)
-            {
-                System.err.println("broken loops in findLiveLoop");
-                Thread.dumpStack();
-            }
+                LOG.log( Level.WARNING, "broken loops in findLiveLoop" );
         }
 
         return out; //out.count();

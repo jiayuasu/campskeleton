@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3d;
@@ -29,6 +31,8 @@ import org.twak.utils.geom.GraphMap;
  */
 public class Output
 {
+    private static final Logger LOG = Logger.getLogger( Output.class.getName() );
+
     // marker for horizontal input edges (other edges can also be horizontal...)
     public static Tag isCreatedHorizontal = new Tag ("horizontal");
 
@@ -337,8 +341,7 @@ public class Output
 
         if ( toGoFace == null )
         {
-            System.err.println ("three consecutive parallel edges in input?");
-//            Thread.dumpStack();
+            LOG.log( Level.FINE, "three consecutive parallel edges in input?" );
             return;
         }
 
