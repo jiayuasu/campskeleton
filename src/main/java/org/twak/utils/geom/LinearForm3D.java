@@ -176,9 +176,10 @@ public class LinearForm3D implements Cloneable
     /**
      * Finds the intersection point between this plane and two others in 3D space.
      *
-     * @throws SingularPlanesError if the three planes do not intersect at a single point (two or
-     *     more of them are parallel or coincident, or a plane has NaN coefficients). See that
-     *     class for how callers handle it and why it is an Error rather than a RuntimeException.
+     * @throws SingularPlanesError if the three planes do not intersect at a single point (their
+     *     normals are linearly dependent, including parallel or coincident cases, or a plane has
+     *     NaN coefficients). See that class for how callers handle it and why it is an Error
+     *     rather than a RuntimeException.
      */
     public Tuple3d collide(final LinearForm3D b, final LinearForm3D c) {
     	final LinearForm3D a = this;
